@@ -2,6 +2,7 @@ package retrofit;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.subscriptions.Subscriptions;
@@ -32,14 +33,14 @@ final class RxSupport {
     return Observable.create(new Observable.OnSubscribe<Object>() {
       @Override public void call(Subscriber<? super Object> subscriber) {
         RequestInterceptorTape interceptorTape = new RequestInterceptorTape();
-        requestInterceptor.intercept(interceptorTape);
+        RxSupport.this.requestInterceptor.intercept(interceptorTape, null);
 
-        Runnable runnable = getRunnable(subscriber, invoker, interceptorTape);
+        Runnable runnable = RxSupport.this.getRunnable(subscriber, invoker, interceptorTape);
         FutureTask<Void> task = new FutureTask<Void>(runnable, null);
 
         // Subscribe to the future task of the network call allowing unsubscription.
         subscriber.add(Subscriptions.from(task));
-        executor.execute(task);
+        RxSupport.this.executor.execute(task);
       }
     });
   }
@@ -56,7 +57,7 @@ final class RxSupport {
           subscriber.onNext(wrapper.responseBody);
           subscriber.onCompleted();
         } catch (RetrofitError e) {
-          subscriber.onError(errorHandler.handleError(e));
+          subscriber.onError(RxSupport.this.errorHandler.handleError(e));
         }
       }
     };

@@ -1,7 +1,12 @@
 // Copyright 2013 Square, Inc.
 package retrofit;
 
-import com.google.gson.Gson;
+import static com.google.common.base.Charsets.UTF_8;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -14,7 +19,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.Test;
+
 import retrofit.client.Header;
 import retrofit.client.Request;
 import retrofit.client.Response;
@@ -46,11 +53,7 @@ import retrofit.mime.TypedOutput;
 import retrofit.mime.TypedString;
 import rx.Observable;
 
-import static com.google.common.base.Charsets.UTF_8;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import com.google.gson.Gson;
 
 @SuppressWarnings("UnusedParameters") // Parameters inspected reflectively.
 public class RequestBuilderTest {
@@ -71,7 +74,7 @@ public class RequestBuilderTest {
     }
 
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -93,7 +96,7 @@ public class RequestBuilderTest {
       }
     }
 
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getMethod()).isEqualTo("CUSTOM1");
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo");
     assertThat(request.getBody()).isNull();
@@ -113,7 +116,7 @@ public class RequestBuilderTest {
       }
     }
 
-    Request request = buildRequest(Example.class, new TypedString("hi"));
+    Request request = this.buildRequest(Example.class, new TypedString("hi"));
     assertThat(request.getMethod()).isEqualTo("CUSTOM2");
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo");
     assertTypedBytes(request.getBody(), "hi");
@@ -129,7 +132,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Example.method: Only one encoding annotation is allowed.");
@@ -146,7 +149,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Example.method: Only one encoding annotation is allowed.");
@@ -162,7 +165,7 @@ public class RequestBuilderTest {
     }
 
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -179,7 +182,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -196,7 +199,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -215,7 +218,7 @@ public class RequestBuilderTest {
     }
 
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -232,7 +235,7 @@ public class RequestBuilderTest {
     }
 
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Example.method: URL path \"foo/bar\" must start with '/'.");
@@ -249,7 +252,7 @@ public class RequestBuilderTest {
     }
 
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -266,7 +269,7 @@ public class RequestBuilderTest {
     }
 
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -282,7 +285,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -298,7 +301,7 @@ public class RequestBuilderTest {
     }
 
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -313,7 +316,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -329,7 +332,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -344,7 +347,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -360,7 +363,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -376,7 +379,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -393,7 +396,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -410,7 +413,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Example.method: Multipart method must contain at least one @Part.");
@@ -425,7 +428,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -441,7 +444,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -458,7 +461,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -475,7 +478,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Example.method: Form-encoded method must contain at least one @Field.");
@@ -491,7 +494,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Example.method: @Headers annotation is empty.");
@@ -507,7 +510,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -523,7 +526,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Example.method: URL \"/{a}\" does not contain \"{b}\". (parameter #2)");
@@ -538,7 +541,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Example.method: No Retrofit annotation found. (parameter #1)");
@@ -553,7 +556,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -569,7 +572,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Example.method: @QueryMap parameter type must be Map. (parameter #1)");
@@ -589,7 +592,7 @@ public class RequestBuilderTest {
     queryParams.put(null, "kat");
 
     try {
-      buildRequest(Example.class, queryParams);
+      this.buildRequest(Example.class, queryParams);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Parameter #1 query map contained null key.");
@@ -604,7 +607,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Example.method: Multiple @Body method annotations found.");
@@ -620,7 +623,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage(
@@ -635,7 +638,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
@@ -649,7 +652,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getMethod()).isEqualTo("DELETE");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
@@ -663,7 +666,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getMethod()).isEqualTo("HEAD");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
@@ -677,7 +680,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, new TypedString("hi"));
+    Request request = this.buildRequest(Example.class, new TypedString("hi"));
     assertThat(request.getMethod()).isEqualTo("POST");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
@@ -691,7 +694,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, new TypedString("hi"));
+    Request request = this.buildRequest(Example.class, new TypedString("hi"));
     assertThat(request.getMethod()).isEqualTo("PUT");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
@@ -705,7 +708,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, new TypedString("hi"));
+    Request request = this.buildRequest(Example.class, new TypedString("hi"));
     assertThat(request.getMethod()).isEqualTo("PATCH");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
@@ -719,7 +722,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "po ng");
+    Request request = this.buildRequest(Example.class, "po ng");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/po%20ng/");
@@ -733,7 +736,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "po%20ng");
+    Request request = this.buildRequest(Example.class, "po%20ng");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/po%20ng/");
@@ -747,12 +750,12 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    interceptor = new RequestInterceptor() {
-      @Override public void intercept(RequestFacade request) {
+    this.interceptor = new RequestInterceptor() {
+      @Override public void intercept(RequestFacade request, RestMethodInfo methodInfo) {
         request.addPathParam("ping", "po ng");
       }
     };
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/po%20ng/");
@@ -766,12 +769,12 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    interceptor = new RequestInterceptor() {
-      @Override public void intercept(RequestFacade request) {
+    this.interceptor = new RequestInterceptor() {
+      @Override public void intercept(RequestFacade request, RestMethodInfo methodInfo) {
         request.addEncodedPathParam("ping", "po%20ng");
       }
     };
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/po%20ng/");
@@ -785,12 +788,12 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    interceptor = new RequestInterceptor() {
-      @Override public void intercept(RequestFacade request) {
+    this.interceptor = new RequestInterceptor() {
+      @Override public void intercept(RequestFacade request, RestMethodInfo methodInfo) {
         request.addPathParam("kit", "kat");
       }
     };
-    Request request = buildRequest(Example.class, "pong");
+    Request request = this.buildRequest(Example.class, "pong");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/pong/kat/");
@@ -804,12 +807,12 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    interceptor = new RequestInterceptor() {
-      @Override public void intercept(RequestFacade request) {
+    this.interceptor = new RequestInterceptor() {
+      @Override public void intercept(RequestFacade request, RestMethodInfo methodInfo) {
         request.addQueryParam("ping", "po ng");
       }
     };
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?ping=po+ng");
@@ -823,12 +826,12 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    interceptor = new RequestInterceptor() {
-      @Override public void intercept(RequestFacade request) {
+    this.interceptor = new RequestInterceptor() {
+      @Override public void intercept(RequestFacade request, RestMethodInfo methodInfo) {
         request.addQueryParam("ping", "pong");
       }
     };
-    Request request = buildRequest(Example.class, "kat");
+    Request request = this.buildRequest(Example.class, "kat");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/kat/?ping=pong");
@@ -842,13 +845,13 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    interceptor = new RequestInterceptor() {
-      @Override public void intercept(RequestFacade request) {
+    this.interceptor = new RequestInterceptor() {
+      @Override public void intercept(RequestFacade request, RestMethodInfo methodInfo) {
         request.addPathParam("ping", "pong");
         request.addQueryParam("butter", "finger");
       }
     };
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/pong/?butter=finger");
@@ -862,13 +865,13 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    interceptor = new RequestInterceptor() {
-      @Override public void intercept(RequestFacade request) {
+    this.interceptor = new RequestInterceptor() {
+      @Override public void intercept(RequestFacade request, RestMethodInfo methodInfo) {
         request.addPathParam("kit", "kat");
         request.addQueryParam("butter", "finger");
       }
     };
-    Request request = buildRequest(Example.class, "pong");
+    Request request = this.buildRequest(Example.class, "pong");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/pong/kat/?butter=finger");
@@ -883,7 +886,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class, new Object[] { null });
+      this.buildRequest(Example.class, new Object[] { null });
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage()).isEqualTo("Path parameter \"ping\" value must not be null.");
@@ -897,7 +900,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "pong");
+    Request request = this.buildRequest(Example.class, "pong");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?ping=pong");
@@ -911,7 +914,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "p+o+n+g");
+    Request request = this.buildRequest(Example.class, "p+o+n+g");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?ping=p+o+n+g");
@@ -925,7 +928,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "pong");
+    Request request = this.buildRequest(Example.class, "pong");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?pi+ng=pong");
@@ -939,7 +942,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "po+ng");
+    Request request = this.buildRequest(Example.class, "po+ng");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?pi+ng=po+ng");
@@ -953,7 +956,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, new Object[] { null });
+    Request request = this.buildRequest(Example.class, new Object[] { null });
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
   }
 
@@ -965,7 +968,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "bar", null, "kat");
+    Request request = this.buildRequest(Example.class, "bar", null, "kat");
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?foo=bar&kit=kat");
   }
 
@@ -976,7 +979,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "pong");
+    Request request = this.buildRequest(Example.class, "pong");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?hi=mom&ping=pong");
@@ -990,7 +993,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?hi=mom");
@@ -1006,7 +1009,7 @@ public class RequestBuilderTest {
       }
     }
 
-    Request request = buildRequest(Example.class, "pong", "kat", "raff");
+    Request request = this.buildRequest(Example.class, "pong", "kat", "raff");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/pong/?kit=kat&riff=raff");
@@ -1021,7 +1024,7 @@ public class RequestBuilderTest {
       }
     }
 
-    Request request = buildRequest(Example.class, "pong?", "kat?");
+    Request request = this.buildRequest(Example.class, "pong?", "kat?");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/pong%3F/?kit=kat%3F");
@@ -1036,7 +1039,7 @@ public class RequestBuilderTest {
       }
     }
 
-    Request request = buildRequest(Example.class, "pong&", "kat&");
+    Request request = this.buildRequest(Example.class, "pong&", "kat&");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/pong%26/?kit=kat%26");
@@ -1051,7 +1054,7 @@ public class RequestBuilderTest {
       }
     }
 
-    Request request = buildRequest(Example.class, "pong#", "kat#");
+    Request request = this.buildRequest(Example.class, "pong#", "kat#");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/pong%23/?kit=kat%23");
@@ -1067,7 +1070,7 @@ public class RequestBuilderTest {
     }
 
     List<Object> values = Arrays.<Object>asList(1, 2, null, "three");
-    Request request = buildRequest(Example.class, values);
+    Request request = this.buildRequest(Example.class, values);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?key=1&key=2&key=three");
@@ -1083,7 +1086,7 @@ public class RequestBuilderTest {
     }
 
     Object[] values = { 1, 2, null, "three" };
-    Request request = buildRequest(Example.class, new Object[] { values });
+    Request request = this.buildRequest(Example.class, new Object[] { values });
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?key=1&key=2&key=three");
@@ -1099,7 +1102,7 @@ public class RequestBuilderTest {
     }
 
     int[] values = { 1, 2, 3 };
-    Request request = buildRequest(Example.class, new Object[] { values });
+    Request request = this.buildRequest(Example.class, new Object[] { values });
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?key=1&key=2&key=3");
@@ -1119,7 +1122,7 @@ public class RequestBuilderTest {
     params.put("foo", null);
     params.put("ping", "pong");
 
-    Request request = buildRequest(Example.class, params);
+    Request request = this.buildRequest(Example.class, params);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?kit=kat&ping=pong");
@@ -1139,7 +1142,7 @@ public class RequestBuilderTest {
     params.put("foo", null);
     params.put("ping", "p%20g");
 
-    Request request = buildRequest(Example.class, params);
+    Request request = this.buildRequest(Example.class, params);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?kit=k%20t&ping=p%20g");
@@ -1159,7 +1162,7 @@ public class RequestBuilderTest {
     params.put("fo o", null);
     params.put("pi ng", "p g");
 
-    Request request = buildRequest(Example.class, params);
+    Request request = this.buildRequest(Example.class, params);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?k+it=k+t&pi+ng=p+g");
@@ -1180,7 +1183,7 @@ public class RequestBuilderTest {
     params.put("fo o", null);
     params.put("pi ng", "p%20g");
 
-    Request request = buildRequest(Example.class, params);
+    Request request = this.buildRequest(Example.class, params);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?k+it=k%20t&pi+ng=p%20g");
@@ -1194,7 +1197,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "pong");
+    Request request = this.buildRequest(Example.class, "pong");
     assertThat(request.getMethod()).isEqualTo("POST");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/pong/");
@@ -1208,7 +1211,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, Arrays.asList("quick", "brown", "fox"));
+    Request request = this.buildRequest(Example.class, Arrays.asList("quick", "brown", "fox"));
     assertThat(request.getMethod()).isEqualTo("POST");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
@@ -1222,7 +1225,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, new TypedString("hi"));
+    Request request = this.buildRequest(Example.class, new TypedString("hi"));
     assertThat(request.getMethod()).isEqualTo("POST");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
@@ -1237,7 +1240,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class, new Object[] { null });
+      this.buildRequest(Example.class, new Object[] { null });
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage()).isEqualTo("Body parameter value must not be null.");
@@ -1252,7 +1255,7 @@ public class RequestBuilderTest {
       }
     }
     Request request =
-        buildRequest(Example.class, "pong", Arrays.asList("quick", "brown", "fox"), "kat");
+        this.buildRequest(Example.class, "pong", Arrays.asList("quick", "brown", "fox"), "kat");
     assertThat(request.getMethod()).isEqualTo("POST");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/pong/kat/");
@@ -1268,7 +1271,7 @@ public class RequestBuilderTest {
       }
     }
 
-    Request request = buildRequest(Example.class, "pong", new TypedString("kat"));
+    Request request = this.buildRequest(Example.class, "pong", new TypedString("kat"));
     assertThat(request.getMethod()).isEqualTo("POST");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
@@ -1296,7 +1299,7 @@ public class RequestBuilderTest {
       }
     }
 
-    Request request = buildRequest(Example.class, "pong", new TypedString("kat"));
+    Request request = this.buildRequest(Example.class, "pong", new TypedString("kat"));
     assertThat(request.getMethod()).isEqualTo("POST");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
@@ -1331,7 +1334,7 @@ public class RequestBuilderTest {
     params.put("ping", "pong");
     params.put("kit", new TypedString("kat"));
 
-    Request request = buildRequest(Example.class, params);
+    Request request = this.buildRequest(Example.class, params);
     assertThat(request.getMethod()).isEqualTo("POST");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
@@ -1362,7 +1365,7 @@ public class RequestBuilderTest {
     params.put("ping", "pong");
     params.put("kit", new TypedString("kat"));
 
-    Request request = buildRequest(Example.class, params);
+    Request request = this.buildRequest(Example.class, params);
     assertThat(request.getMethod()).isEqualTo("POST");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
@@ -1398,7 +1401,7 @@ public class RequestBuilderTest {
     params.put(null, "kat");
 
     try {
-      buildRequest(Example.class, params);
+      this.buildRequest(Example.class, params);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Parameter #1 part map contained null key.");
@@ -1413,7 +1416,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "pong", null);
+    Request request = this.buildRequest(Example.class, "pong", null);
     assertThat(request.getMethod()).isEqualTo("POST");
     assertThat(request.getHeaders()).isEmpty();
     assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/");
@@ -1437,7 +1440,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class, new Object[] { null });
+      this.buildRequest(Example.class, new Object[] { null });
       fail();
     } catch (IllegalStateException e) {
       assertThat(e.getMessage()).isEqualTo("Multipart requests must contain at least one part.");
@@ -1452,7 +1455,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "bar", "pong");
+    Request request = this.buildRequest(Example.class, "bar", "pong");
     assertTypedBytes(request.getBody(), "foo=bar&ping=pong");
   }
 
@@ -1464,7 +1467,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "ba r");
+    Request request = this.buildRequest(Example.class, "ba r");
     assertTypedBytes(request.getBody(), "na+me=ba+r");
   }
 
@@ -1476,7 +1479,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "ba+r");
+    Request request = this.buildRequest(Example.class, "ba+r");
     assertTypedBytes(request.getBody(), "na+me=ba+r");
   }
 
@@ -1489,7 +1492,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "bar", null, "kat");
+    Request request = this.buildRequest(Example.class, "bar", null, "kat");
     assertTypedBytes(request.getBody(), "foo=bar&kit=kat");
   }
 
@@ -1503,7 +1506,7 @@ public class RequestBuilderTest {
     }
 
     List<Object> values = Arrays.<Object>asList("foo", "bar", null, 3);
-    Request request = buildRequest(Example.class, values, "kat");
+    Request request = this.buildRequest(Example.class, values, "kat");
     assertTypedBytes(request.getBody(), "foo=foo&foo=bar&foo=3&kit=kat");
   }
 
@@ -1517,7 +1520,7 @@ public class RequestBuilderTest {
     }
 
     Object[] values = { 1, 2, null, "three" };
-    Request request = buildRequest(Example.class, values, "kat");
+    Request request = this.buildRequest(Example.class, values, "kat");
     assertTypedBytes(request.getBody(), "foo=1&foo=2&foo=three&kit=kat");
   }
 
@@ -1531,7 +1534,7 @@ public class RequestBuilderTest {
     }
 
     int[] values = { 1, 2, 3 };
-    Request request = buildRequest(Example.class, values, "kat");
+    Request request = this.buildRequest(Example.class, values, "kat");
     assertTypedBytes(request.getBody(), "foo=1&foo=2&foo=3&kit=kat");
   }
 
@@ -1548,7 +1551,7 @@ public class RequestBuilderTest {
     fieldMap.put("k+it", "k at");
     fieldMap.put("pin+g", "po ng");
 
-    Request request = buildRequest(Example.class, fieldMap);
+    Request request = this.buildRequest(Example.class, fieldMap);
     assertTypedBytes(request.getBody(), "k+it=k+at&pin+g=po+ng");
   }
 
@@ -1565,7 +1568,7 @@ public class RequestBuilderTest {
     fieldMap.put("k it", "k+at");
     fieldMap.put("pin g", "po+ng");
 
-    Request request = buildRequest(Example.class, fieldMap);
+    Request request = this.buildRequest(Example.class, fieldMap);
     assertTypedBytes(request.getBody(), "k+it=k+at&pin+g=po+ng");
   }
 
@@ -1583,7 +1586,7 @@ public class RequestBuilderTest {
     fieldMap.put("foo", null);
     fieldMap.put("ping", "pong");
 
-    Request request = buildRequest(Example.class, fieldMap);
+    Request request = this.buildRequest(Example.class, fieldMap);
     assertTypedBytes(request.getBody(), "kit=kat&ping=pong");
   }
 
@@ -1602,7 +1605,7 @@ public class RequestBuilderTest {
     fieldMap.put(null, "pong");
 
     try {
-      buildRequest(Example.class, fieldMap);
+      this.buildRequest(Example.class, fieldMap);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Parameter #1 field map contained null key.");
@@ -1618,7 +1621,7 @@ public class RequestBuilderTest {
       }
     }
     try {
-      buildRequest(Example.class);
+      this.buildRequest(Example.class);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Example.method: @FieldMap parameter type must be Map. (parameter #1)");
@@ -1636,7 +1639,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()) //
         .containsExactly(new Header("ping", "pong"), new Header("kit", "kat"));
@@ -1651,13 +1654,13 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    interceptor = new RequestInterceptor() {
-      @Override public void intercept(RequestFacade request) {
+    this.interceptor = new RequestInterceptor() {
+      @Override public void intercept(RequestFacade request, RestMethodInfo methodInfo) {
         request.addHeader("ping", "pong");
         request.addHeader("kit", "kat");
       }
     };
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()) //
         .containsExactly(new Header("ping", "pong"), new Header("kit", "kat"));
@@ -1673,12 +1676,12 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    interceptor = new RequestInterceptor() {
-      @Override public void intercept(RequestFacade request) {
+    this.interceptor = new RequestInterceptor() {
+      @Override public void intercept(RequestFacade request, RestMethodInfo methodInfo) {
         request.addHeader("kit", "kat");
       }
     };
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()) //
         .containsExactly(new Header("ping", "pong"), new Header("kit", "kat"));
@@ -1694,12 +1697,12 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    interceptor = new RequestInterceptor() {
-      @Override public void intercept(RequestFacade request) {
+    this.interceptor = new RequestInterceptor() {
+      @Override public void intercept(RequestFacade request, RestMethodInfo methodInfo) {
         request.addHeader("kit", "kat");
       }
     };
-    Request request = buildRequest(Example.class, "buzz");
+    Request request = this.buildRequest(Example.class, "buzz");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).containsExactly(new Header("ping", "pong"),
         new Header("kit", "kat"), new Header("fizz", "buzz"));
@@ -1714,7 +1717,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, new BigInteger("1234"));
+    Request request = this.buildRequest(Example.class, new BigInteger("1234"));
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()) //
         .containsExactly(new Header("kit", "1234"));
@@ -1730,7 +1733,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "kat");
+    Request request = this.buildRequest(Example.class, "kat");
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()) //
         .containsExactly(new Header("ping", "pong"), new Header("kit", "kat"));
@@ -1745,7 +1748,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, Arrays.asList("bar", null, "baz"));
+    Request request = this.buildRequest(Example.class, Arrays.asList("bar", null, "baz"));
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()) //
         .containsExactly(new Header("foo", "bar"), new Header("foo", "baz"));
@@ -1760,7 +1763,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, (Object) new String[] { "bar", null, "baz" });
+    Request request = this.buildRequest(Example.class, (Object) new String[] { "bar", null, "baz" });
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()) //
         .containsExactly(new Header("foo", "bar"), new Header("foo", "baz"));
@@ -1776,7 +1779,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, new TypedString("Plain"));
+    Request request = this.buildRequest(Example.class, new TypedString("Plain"));
     assertThat(request.getBody().mimeType()).isEqualTo("text/not-plain");
   }
 
@@ -1788,7 +1791,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getHeaders()).contains(new Header("Content-Type", "text/not-plain"));
   }
 
@@ -1799,12 +1802,12 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    interceptor = new RequestInterceptor() {
-      @Override public void intercept(RequestFacade request) {
+    this.interceptor = new RequestInterceptor() {
+      @Override public void intercept(RequestFacade request, RestMethodInfo methodInfo) {
         request.addHeader("Content-Type", "text/not-plain");
       }
     };
-    Request request = buildRequest(Example.class);
+    Request request = this.buildRequest(Example.class);
     assertThat(request.getHeaders()).contains(new Header("Content-Type", "text/not-plain"));
   }
 
@@ -1816,7 +1819,7 @@ public class RequestBuilderTest {
         return null;
       }
     }
-    Request request = buildRequest(Example.class, "text/not-plain", new TypedString("Plain"));
+    Request request = this.buildRequest(Example.class, "text/not-plain", new TypedString("Plain"));
     assertThat(request.getBody().mimeType()).isEqualTo("text/not-plain");
   }
 
@@ -1839,8 +1842,8 @@ public class RequestBuilderTest {
     methodInfo.init();
 
     RequestBuilder builder = new RequestBuilder("http://example.com/", methodInfo, GSON);
-    if (interceptor != null) {
-      interceptor.intercept(builder);
+    if (this.interceptor != null) {
+      this.interceptor.intercept(builder, methodInfo);
     }
     builder.setArguments(args);
 

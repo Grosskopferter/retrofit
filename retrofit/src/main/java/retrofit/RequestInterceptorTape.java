@@ -12,27 +12,27 @@ final class RequestInterceptorTape implements RequestInterceptor.RequestFacade, 
   private final List<CommandWithParams> tape = new ArrayList<CommandWithParams>();
 
   @Override public void addHeader(String name, String value) {
-    tape.add(new CommandWithParams(Command.ADD_HEADER, name, value));
+    this.tape.add(new CommandWithParams(Command.ADD_HEADER, name, value));
   }
 
   @Override public void addPathParam(String name, String value) {
-    tape.add(new CommandWithParams(Command.ADD_PATH_PARAM, name, value));
+    this.tape.add(new CommandWithParams(Command.ADD_PATH_PARAM, name, value));
   }
 
   @Override public void addEncodedPathParam(String name, String value) {
-    tape.add(new CommandWithParams(Command.ADD_ENCODED_PATH_PARAM, name, value));
+    this.tape.add(new CommandWithParams(Command.ADD_ENCODED_PATH_PARAM, name, value));
   }
 
   @Override public void addQueryParam(String name, String value) {
-    tape.add(new CommandWithParams(Command.ADD_QUERY_PARAM, name, value));
+    this.tape.add(new CommandWithParams(Command.ADD_QUERY_PARAM, name, value));
   }
 
   @Override public void addEncodedQueryParam(String name, String value) {
-    tape.add(new CommandWithParams(Command.ADD_ENCODED_QUERY_PARAM, name, value));
+    this.tape.add(new CommandWithParams(Command.ADD_ENCODED_QUERY_PARAM, name, value));
   }
 
-  @Override public void intercept(RequestFacade request) {
-    for (CommandWithParams cwp : tape) {
+  @Override public void intercept(RequestFacade request,  RestMethodInfo methodInfo) {
+    for (CommandWithParams cwp : this.tape) {
       cwp.command.intercept(request, cwp.name, cwp.value);
     }
   }

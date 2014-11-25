@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+
 import retrofit.client.Client;
 import retrofit.client.Header;
 import retrofit.client.Request;
@@ -173,7 +174,7 @@ public class RestAdapter {
 
   /** Change the level of logging. */
   public void setLogLevel(LogLevel loglevel) {
-    if (logLevel == null) {
+    if (this.logLevel == null) {
       throw new NullPointerException("Log level may not be null.");
     }
     this.logLevel = loglevel;
@@ -181,7 +182,7 @@ public class RestAdapter {
 
   /** The current logging level. */
   public LogLevel getLogLevel() {
-    return logLevel;
+    return this.logLevel;
   }
 
   /** Create an implementation of the API defined by the specified {@code service} interface. */
@@ -189,15 +190,15 @@ public class RestAdapter {
   public <T> T create(Class<T> service) {
     Utils.validateServiceClass(service);
     return (T) Proxy.newProxyInstance(service.getClassLoader(), new Class<?>[] { service },
-        new RestHandler(getMethodInfoCache(service)));
+        new RestHandler(this.getMethodInfoCache(service)));
   }
 
   Map<Method, RestMethodInfo> getMethodInfoCache(Class<?> service) {
-    synchronized (serviceMethodInfoCache) {
-      Map<Method, RestMethodInfo> methodInfoCache = serviceMethodInfoCache.get(service);
+    synchronized (this.serviceMethodInfoCache) {
+      Map<Method, RestMethodInfo> methodInfoCache = this.serviceMethodInfoCache.get(service);
       if (methodInfoCache == null) {
         methodInfoCache = new LinkedHashMap<Method, RestMethodInfo>();
-        serviceMethodInfoCache.put(service, methodInfoCache);
+        this.serviceMethodInfoCache.put(service, methodInfoCache);
       }
       return methodInfoCache;
     }
@@ -230,13 +231,13 @@ public class RestAdapter {
       }
 
       // Load or create the details cache for the current method.
-      final RestMethodInfo methodInfo = getMethodInfo(methodDetailsCache, method);
+      final RestMethodInfo methodInfo = getMethodInfo(this.methodDetailsCache, method);
 
       if (methodInfo.isSynchronous) {
         try {
-          return invokeRequest(requestInterceptor, methodInfo, args);
+          return this.invokeRequest(RestAdapter.this.requestInterceptor, methodInfo, args);
         } catch (RetrofitError error) {
-          Throwable newError = errorHandler.handleError(error);
+          Throwable newError = RestAdapter.this.errorHandler.handleError(error);
           if (newError == null) {
             throw new IllegalStateException("Error handler returned null for wrapped exception.",
                 error);
@@ -245,34 +246,34 @@ public class RestAdapter {
         }
       }
 
-      if (httpExecutor == null || callbackExecutor == null) {
+      if (RestAdapter.this.httpExecutor == null || RestAdapter.this.callbackExecutor == null) {
         throw new IllegalStateException("Asynchronous invocation requires calling setExecutors.");
       }
 
       if (methodInfo.isObservable) {
-        if (rxSupport == null) {
+        if (RestAdapter.this.rxSupport == null) {
           if (Platform.HAS_RX_JAVA) {
-            rxSupport = new RxSupport(httpExecutor, errorHandler, requestInterceptor);
+            RestAdapter.this.rxSupport = new RxSupport(RestAdapter.this.httpExecutor, RestAdapter.this.errorHandler, RestAdapter.this.requestInterceptor);
           } else {
             throw new IllegalStateException("Observable method found but no RxJava on classpath.");
           }
         }
-        return rxSupport.createRequestObservable(new RxSupport.Invoker() {
+        return RestAdapter.this.rxSupport.createRequestObservable(new RxSupport.Invoker() {
           @Override public ResponseWrapper invoke(RequestInterceptor requestInterceptor) {
-            return (ResponseWrapper) invokeRequest(requestInterceptor, methodInfo, args);
+            return (ResponseWrapper) RestHandler.this.invokeRequest(requestInterceptor, methodInfo, args);
           }
         });
       }
 
       // Apply the interceptor synchronously, recording the interception so we can replay it later.
       // This way we still defer argument serialization to the background thread.
-      final RequestInterceptorTape interceptorTape = new RequestInterceptorTape();
-      requestInterceptor.intercept(interceptorTape);
+      //final RequestInterceptorTape interceptorTape = new RequestInterceptorTape();
+      //requestInterceptor.intercept(interceptorTape);
 
       Callback<?> callback = (Callback<?>) args[args.length - 1];
-      httpExecutor.execute(new CallbackRunnable(callback, callbackExecutor, errorHandler) {
+      RestAdapter.this.httpExecutor.execute(new CallbackRunnable(callback, RestAdapter.this.callbackExecutor, RestAdapter.this.errorHandler) {
         @Override public ResponseWrapper obtainResponse() {
-          return (ResponseWrapper) invokeRequest(interceptorTape, methodInfo, args);
+          return (ResponseWrapper) RestHandler.this.invokeRequest(RestAdapter.this.requestInterceptor, methodInfo, args);
         }
       });
       return null; // Asynchronous methods should have return type of void.
@@ -290,11 +291,11 @@ public class RestAdapter {
       try {
         methodInfo.init(); // Ensure all relevant method information has been loaded.
 
-        String serverUrl = server.getUrl();
-        RequestBuilder requestBuilder = new RequestBuilder(serverUrl, methodInfo, converter);
+        String serverUrl = RestAdapter.this.server.getUrl();
+        RequestBuilder requestBuilder = new RequestBuilder(serverUrl, methodInfo, RestAdapter.this.converter);
         requestBuilder.setArguments(args);
 
-        requestInterceptor.intercept(requestBuilder);
+        requestInterceptor.intercept(requestBuilder, methodInfo);
 
         Request request = requestBuilder.build();
         url = request.getUrl();
@@ -304,18 +305,18 @@ public class RestAdapter {
           Thread.currentThread().setName(THREAD_PREFIX + url.substring(serverUrl.length()));
         }
 
-        if (logLevel.log()) {
+        if (RestAdapter.this.logLevel.log()) {
           // Log the request data.
-          request = logAndReplaceRequest("HTTP", request, args);
+          request = RestAdapter.this.logAndReplaceRequest("HTTP", request, args);
         }
 
         long start = System.nanoTime();
-        Response response = client.execute(request);
+        Response response = RestAdapter.this.client.execute(request);
         long elapsedTime = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
 
-        if (logLevel.log()) {
+        if (RestAdapter.this.logLevel.log()) {
           // Log the response data.
-          response = logAndReplaceResponse(url, response, elapsedTime);
+          response = RestAdapter.this.logAndReplaceResponse(url, response, elapsedTime);
         }
 
         Type type = methodInfo.responseObjectType;
@@ -345,8 +346,8 @@ public class RestAdapter {
 
           ExceptionCatchingTypedInput wrapped = new ExceptionCatchingTypedInput(body);
           try {
-            Object convert = converter.fromBody(wrapped, type);
-            logResponseBody(body, convert);
+            Object convert = RestAdapter.this.converter.fromBody(wrapped, type);
+            RestAdapter.this.logResponseBody(body, convert);
             if (methodInfo.isSynchronous) {
               return convert;
             }
@@ -361,22 +362,22 @@ public class RestAdapter {
             // The response body was partially read by the converter. Replace it with null.
             response = Utils.replaceResponseBody(response, null);
 
-            throw RetrofitError.conversionError(url, response, converter, type, e);
+            throw RetrofitError.conversionError(url, response, RestAdapter.this.converter, type, e);
           }
         }
 
         response = Utils.readBodyToBytesIfNecessary(response);
-        throw RetrofitError.httpError(url, response, converter, type);
+        throw RetrofitError.httpError(url, response, RestAdapter.this.converter, type);
       } catch (RetrofitError e) {
         throw e; // Pass through our own errors.
       } catch (IOException e) {
-        if (logLevel.log()) {
-          logException(e, url);
+        if (RestAdapter.this.logLevel.log()) {
+          RestAdapter.this.logException(e, url);
         }
         throw RetrofitError.networkError(url, e);
       } catch (Throwable t) {
-        if (logLevel.log()) {
-          logException(t, url);
+        if (RestAdapter.this.logLevel.log()) {
+          RestAdapter.this.logException(t, url);
         }
         throw RetrofitError.unexpectedError(url, t);
       } finally {
@@ -389,11 +390,11 @@ public class RestAdapter {
 
   /** Log request headers and body. Consumes request body and returns identical replacement. */
   Request logAndReplaceRequest(String name, Request request, Object[] args) throws IOException {
-    log.log(String.format("---> %s %s %s", name, request.getMethod(), request.getUrl()));
+    this.log.log(String.format("---> %s %s %s", name, request.getMethod(), request.getUrl()));
 
-    if (logLevel.ordinal() >= LogLevel.HEADERS.ordinal()) {
+    if (this.logLevel.ordinal() >= LogLevel.HEADERS.ordinal()) {
       for (Header header : request.getHeaders()) {
-        log.log(header.toString());
+        this.log.log(header.toString());
       }
 
       String bodySize = "no";
@@ -401,18 +402,18 @@ public class RestAdapter {
       if (body != null) {
         String bodyMime = body.mimeType();
         if (bodyMime != null) {
-          log.log("Content-Type: " + bodyMime);
+          this.log.log("Content-Type: " + bodyMime);
         }
 
         long bodyLength = body.length();
         bodySize = bodyLength + "-byte";
         if (bodyLength != -1) {
-          log.log("Content-Length: " + bodyLength);
+          this.log.log("Content-Length: " + bodyLength);
         }
 
-        if (logLevel.ordinal() >= LogLevel.FULL.ordinal()) {
+        if (this.logLevel.ordinal() >= LogLevel.FULL.ordinal()) {
           if (!request.getHeaders().isEmpty()) {
-            log.log("");
+            this.log.log("");
           }
           if (!(body instanceof TypedByteArray)) {
             // Read the entire response body to we can log it and replace the original response
@@ -422,18 +423,18 @@ public class RestAdapter {
 
           byte[] bodyBytes = ((TypedByteArray) body).getBytes();
           String bodyCharset = MimeUtil.parseCharset(body.mimeType(), "UTF-8");
-          log.log(new String(bodyBytes, bodyCharset));
-        } else if (logLevel.ordinal() >= LogLevel.HEADERS_AND_ARGS.ordinal()) {
+          this.log.log(new String(bodyBytes, bodyCharset));
+        } else if (this.logLevel.ordinal() >= LogLevel.HEADERS_AND_ARGS.ordinal()) {
           if (!request.getHeaders().isEmpty()) {
-            log.log("---> REQUEST:");
+            this.log.log("---> REQUEST:");
           }
           for (int i = 0; i < args.length; i++) {
-            log.log("#" + i + ": " + args[i]);
+            this.log.log("#" + i + ": " + args[i]);
           }
         }
       }
 
-      log.log(String.format("---> END %s (%s body)", name, bodySize));
+      this.log.log(String.format("---> END %s (%s body)", name, bodySize));
     }
 
     return request;
@@ -442,11 +443,11 @@ public class RestAdapter {
   /** Log response headers and body. Consumes response body and returns identical replacement. */
   private Response logAndReplaceResponse(String url, Response response, long elapsedTime)
       throws IOException {
-    log.log(String.format("<--- HTTP %s %s (%sms)", response.getStatus(), url, elapsedTime));
+    this.log.log(String.format("<--- HTTP %s %s (%sms)", response.getStatus(), url, elapsedTime));
 
-    if (logLevel.ordinal() >= LogLevel.HEADERS.ordinal()) {
+    if (this.logLevel.ordinal() >= LogLevel.HEADERS.ordinal()) {
       for (Header header : response.getHeaders()) {
-        log.log(header.toString());
+        this.log.log(header.toString());
       }
 
       long bodySize = 0;
@@ -454,9 +455,9 @@ public class RestAdapter {
       if (body != null) {
         bodySize = body.length();
 
-        if (logLevel.ordinal() >= LogLevel.FULL.ordinal()) {
+        if (this.logLevel.ordinal() >= LogLevel.FULL.ordinal()) {
           if (!response.getHeaders().isEmpty()) {
-            log.log("");
+            this.log.log("");
           }
 
           if (!(body instanceof TypedByteArray)) {
@@ -469,30 +470,30 @@ public class RestAdapter {
           bodySize = bodyBytes.length;
           String bodyMime = body.mimeType();
           String bodyCharset = MimeUtil.parseCharset(bodyMime, "UTF-8");
-          log.log(new String(bodyBytes, bodyCharset));
+          this.log.log(new String(bodyBytes, bodyCharset));
         }
       }
 
-      log.log(String.format("<--- END HTTP (%s-byte body)", bodySize));
+      this.log.log(String.format("<--- END HTTP (%s-byte body)", bodySize));
     }
 
     return response;
   }
 
   private void logResponseBody(TypedInput body, Object convert) {
-    if (logLevel.ordinal() == LogLevel.HEADERS_AND_ARGS.ordinal()) {
-      log.log("<--- BODY:");
-      log.log(convert.toString());
+    if (this.logLevel.ordinal() == LogLevel.HEADERS_AND_ARGS.ordinal()) {
+      this.log.log("<--- BODY:");
+      this.log.log(convert.toString());
     }
   }
 
   /** Log an exception that occurred during the processing of a request or response. */
   void logException(Throwable t, String url) {
-    log.log(String.format("---- ERROR %s", url != null ? url : ""));
+    this.log.log(String.format("---- ERROR %s", url != null ? url : ""));
     StringWriter sw = new StringWriter();
     t.printStackTrace(new PrintWriter(sw));
-    log.log(sw.toString());
-    log.log("---- END ERROR");
+    this.log.log(sw.toString());
+    this.log.log("---- END ERROR");
   }
 
   /**
@@ -609,35 +610,35 @@ public class RestAdapter {
 
     /** Create the {@link RestAdapter} instances. */
     public RestAdapter build() {
-      if (endpoint == null) {
+      if (this.endpoint == null) {
         throw new IllegalArgumentException("Endpoint may not be null.");
       }
-      ensureSaneDefaults();
-      return new RestAdapter(endpoint, client, httpExecutor, callbackExecutor,
-          requestInterceptor, converter, errorHandler, log, logLevel);
+      this.ensureSaneDefaults();
+      return new RestAdapter(this.endpoint, this.client, this.httpExecutor, this.callbackExecutor,
+          this.requestInterceptor, this.converter, this.errorHandler, this.log, this.logLevel);
     }
 
     private void ensureSaneDefaults() {
-      if (converter == null) {
-        converter = Platform.get().defaultConverter();
+      if (this.converter == null) {
+        this.converter = Platform.get().defaultConverter();
       }
-      if (client == null) {
-        client = Platform.get().defaultClient();
+      if (this.client == null) {
+        this.client = Platform.get().defaultClient();
       }
-      if (httpExecutor == null) {
-        httpExecutor = Platform.get().defaultHttpExecutor();
+      if (this.httpExecutor == null) {
+        this.httpExecutor = Platform.get().defaultHttpExecutor();
       }
-      if (callbackExecutor == null) {
-        callbackExecutor = Platform.get().defaultCallbackExecutor();
+      if (this.callbackExecutor == null) {
+        this.callbackExecutor = Platform.get().defaultCallbackExecutor();
       }
-      if (errorHandler == null) {
-        errorHandler = ErrorHandler.DEFAULT;
+      if (this.errorHandler == null) {
+        this.errorHandler = ErrorHandler.DEFAULT;
       }
-      if (log == null) {
-        log = Platform.get().defaultLog();
+      if (this.log == null) {
+        this.log = Platform.get().defaultLog();
       }
-      if (requestInterceptor == null) {
-        requestInterceptor = RequestInterceptor.NONE;
+      if (this.requestInterceptor == null) {
+        this.requestInterceptor = RequestInterceptor.NONE;
       }
     }
   }
