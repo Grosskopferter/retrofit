@@ -72,7 +72,7 @@ final class RequestBuilder implements RequestInterceptor.RequestFacade {
     }
     contentTypeHeader = methodInfo.contentTypeHeader;
 
-    relativeUrl = methodInfo.requestUrl;
+    relativeUrl = methodInfo.getRequestUrl();
 
     String requestQuery = methodInfo.requestQuery;
     if (requestQuery != null) {
